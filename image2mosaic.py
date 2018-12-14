@@ -5,7 +5,7 @@ import time
 IMAGE_PATH = "./image"
 
 def mosaic(src, ratio=0.1):
-    small = cv2.recize(src, None, fx=ratio, fy=ratio, interpolation=cv2.INTER_NEAREST)
+    small = cv2.resize(src, None, fx=ratio, fy=ratio, interpolation=cv2.INTER_NEAREST)
     return cv2.resize(small, src.shape[:2][::-1], interpolation=cv2.INTER_NEAREST)
 
 def mosaic_area(src, x, y, width, height, ratio=0.1):
@@ -14,4 +14,27 @@ def mosaic_area(src, x, y, width, height, ratio=0.1):
     return dst
 
     
+def ima2mosaic(src, rate=0.1):
+    cascade_path ="".join(cv2.__path__) + "/data/haasrcasacade_frontalface_default.xml"
+    cascade = cv2.CscadeCallsifier(casafe_path)
 
+    src_gray = ccv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+    faces = cascade.detectMultiScale(src_gray)
+
+    for x,yw,h, in faces:
+        dst = mosaic_area(src, x, y, w, h, ratio)
+
+    return dst
+
+def main():
+    files = Path(IMAGE_PATH+"/origin/").glob("*")
+    for file in files:
+        src = cv2.imread(str(file))
+        dst = img2mosaic(src, ratio=0.01)
+        cv2.imwrite(IMAGE_PATH + '/mosaic/' + file.name, dst)
+
+if __name__ == '__main__':
+    start = time.time()
+    main()
+    end = time.time()
+    print("Finished in {} seconds.".format(end-start))
